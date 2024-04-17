@@ -1,0 +1,41 @@
+{
+  "name": "next-ts-starter",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "run-p dev:*",
+    "dev:next": "next dev -p 3000",
+    "dev:hcm": "hcm 'src/**/*.module.css' -w",
+    "hcm": "hcm 'src/**/*.module.css'",
+    "build": "next build",
+    "lint": "run-p lint:js lint:prettier lint:style",
+    "lint:js": "eslint --ext .ts,.tsx,.js --ignore-path .gitignore .",
+    "lint:prettier": "prettier --check \"./**/*.{ts,tsx,js}\" --ignore-path .gitignore",
+    "lint:style": "stylelint \"src/**/*.css\" --ignore-path .gitignore",
+    "lint:fix": "npm run lint:js -- --fix && prettier --write \"./**/*.{ts,tsx,js}\" --ignore-path .gitignore && npm run lint:style -- --fix",
+    "start": "next start",
+    "typecheck": "npm run hcm && tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "14.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/react": "^18.2.67",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.1.4",
+    "eslint-config-prettier": "^9.1.0",
+    "happy-css-modules": "^2.1.2",
+    "npm-run-all": "^4.1.5",
+    "prettier": "3.2.5",
+    "prettier-plugin-organize-imports": "^3.2.3",
+    "stylelint": "^14.16.1",
+    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-config-recess-order": "^3.1.0",
+    "stylelint-config-standard": "^29.0.0",
+    "typescript": "^5.1.6"
+  }
+}
