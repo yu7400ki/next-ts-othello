@@ -13,7 +13,7 @@ import { useState } from 'react';
 const intoArray = (n: bigint): boolean[] =>
   Array.from(n.toString(2).padStart(64, '0')).map((c) => c === '1');
 
-const potCount = (n: bigint): number => intoArray(n).reduce((acc, b) => acc + Number(b), 0);
+const popCount = (n: bigint): number => intoArray(n).reduce((acc, b) => acc + Number(b), 0);
 
 const fromMoves = (moves: number[]): [Board, Stone] =>
   moves.reduce(
@@ -42,8 +42,8 @@ const Home = () => {
   return (
     <div className={styles.container}>
       <div className={styles.status} data-status={status(board)} data-turn={turnToString(turn)}>
-        <div>⚫️{potCount(board[Stone.Black])}</div>
-        <div>⚪️{potCount(board[Stone.White])}</div>
+        <div>⚫️{popCount(board[Stone.Black])}</div>
+        <div>⚪️{popCount(board[Stone.White])}</div>
       </div>
       <div className={styles.board}>
         {intoArray(board[Stone.Black])
