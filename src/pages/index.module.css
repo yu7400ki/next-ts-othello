@@ -9,6 +9,30 @@
   font-size: 28px;
 }
 
+.status {
+  width: 640px;
+  height: 80px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status:before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.status[data-status='0']:before {
+  content: attr(data-turn);
+}
+
+.status[data-status='1']:before {
+  content: 'GameOver';
+}
+
 .board {
   position: relative;
   width: 640px;

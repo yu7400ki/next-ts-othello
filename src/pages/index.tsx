@@ -7,12 +7,13 @@ import {
   move,
   opposite,
   status,
-  Status,
 } from '../othello';
 import { useState } from 'react';
 
 const intoArray = (n: bigint): boolean[] =>
   Array.from(n.toString(2).padStart(64, '0')).map((c) => c === '1');
+
+const potCount = (n: bigint): number => intoArray(n).reduce((acc, b) => acc + Number(b), 0);
 
 const fromMoves = (moves: number[]): [Board, Stone] =>
   moves.reduce(
@@ -25,6 +26,12 @@ const fromMoves = (moves: number[]): [Board, Stone] =>
     [initialBoard, Stone.Black] as [Board, Stone],
   );
 
+const turnToString = (turn: Stone): string =>
+  ({
+    [Stone.Black]: '⚫️',
+    [Stone.White]: '⚪️',
+  })[turn];
+
 const Home = () => {
   const [moves, setMoves] = useState<number[]>([]);
   const [board, turn] = fromMoves(moves);
@@ -34,7 +41,10 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
-      <p>{status(board) === Status.GameOver ? 'GameOver' : turn === Stone.Black ? '⚫️' : '⚪️'}</p>
+      <div className={styles.status} data-status={status(board)} data-turn={turnToString(turn)}>
+        <div>⚫️{potCount(board[Stone.Black])}</div>
+        <div>⚪️{potCount(board[Stone.White])}</div>
+      </div>
       <div className={styles.board}>
         {intoArray(board[Stone.Black])
           .reverse()
