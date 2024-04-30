@@ -46,13 +46,9 @@ const DirectionMaskMap = {
 const lookup = (target: bigint, source: bigint, direction: Direction): bigint => {
   const shift = BigInt(direction);
   const mask = source & DirectionMaskMap[direction];
-  let result = mask & (target << shift);
-  result |= mask & (result << shift);
-  result |= mask & (result << shift);
-  result |= mask & (result << shift);
-  result |= mask & (result << shift);
-  result |= mask & (result << shift);
-  return result;
+  return Array(5)
+    .fill(0)
+    .reduce((acc) => acc | (mask & (acc << shift)), mask & (target << shift));
 };
 
 export const makeLegalMoves = (board: Board, stone: Stone): bigint => {
@@ -71,9 +67,15 @@ export const isLegalMove = (board: Board, stone: Stone, pos: bigint): boolean =>
 const flip = (board: Board, stone: Stone, pos: bigint): bigint => {
   const opponent = opposite(stone);
   return Object.values(Direction).reduce((acc, direction) => {
-    const result = lookup(pos, board[opponent], direction);
-    if (board[stone] & (result << BigInt(direction))) return acc | result;
-    return acc;
+    const candidate = lookup(pos, board[opponent], direction);
+    const shift = BigInt(direction);
+    const mask = board[stone] & (candidate << shift);
+    return (
+      acc |
+      Array(5)
+        .fill(0)
+        .reduce((acc) => acc | (candidate & (acc >> shift)), candidate & (mask >> shift))
+    );
   }, 0n);
 };
 
@@ -94,6 +96,6 @@ export const Status = {
 export type Status = (typeof Status)[keyof typeof Status];
 
 export const status = (board: Board): Status =>
-  makeLegalMoves(board, Stone.Black) | makeLegalMoves(board, Stone.White)
-    ? Status.Continue
-    : Status.GameOver;
+  Number(
+    (makeLegalMoves(board, Stone.Black) | makeLegalMoves(board, Stone.White)) === 0n,
+  ) as Status;
