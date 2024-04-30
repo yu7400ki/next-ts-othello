@@ -5,48 +5,32 @@ import {
   initialBoard,
   makeLegalMoves,
   move,
-  isLegalMove,
   opposite,
   status,
   Status,
 } from '../othello';
-import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 const intoArray = (n: bigint): boolean[] =>
   Array.from(n.toString(2).padStart(64, '0')).map((c) => c === '1');
 
-const toAlphabet = (i: number): string =>
-  String.fromCharCode('a'.charCodeAt(0) + (i % 8)) + (Math.floor(i / 8) + 1);
-const fromAlphabet = (s: string): number =>
-  s.charCodeAt(0) - 'a'.charCodeAt(0) + (parseInt(s[1]) - 1) * 8;
-const fromRecord = (record: string): [Board, Stone] => {
-  let board: Board = initialBoard;
-  let turn: Stone = Stone.Black;
-  if (!record.match(/^([a-h][1-8]){0,64}$/)) throw new Error();
-  for (const pos of record.match(/[a-h][1-8]/g) ?? []) {
-    const mask = 1n << BigInt(fromAlphabet(pos));
-    if (!isLegalMove(board, turn, mask)) throw new Error();
-    board = move(board, turn, mask);
-    if (makeLegalMoves(board, opposite(turn))) {
-      turn = opposite(turn);
-    }
-  }
-  return [board, turn];
-};
+const fromMoves = (moves: number[]): [Board, Stone] =>
+  moves.reduce(
+    ([board, turn], i) => {
+      const mask = 1n << BigInt(i);
+      const nextBoard = move(board, turn, mask);
+      const legalMoves = makeLegalMoves(nextBoard, opposite(turn));
+      return [nextBoard, (turn ^ Number(legalMoves > 0)) as Stone];
+    },
+    [initialBoard, Stone.Black] as [Board, Stone],
+  );
 
 const Home = () => {
-  const router = useRouter();
-  const record = router.query.record ?? '';
-  if (typeof record !== 'string') throw new Error();
-  const [board, turn] = fromRecord(record);
+  const [moves, setMoves] = useState<number[]>([]);
+  const [board, turn] = fromMoves(moves);
   const legalMoves = makeLegalMoves(board, turn);
 
-  const handleClick = (i: number) => () => {
-    const pos = 1n << BigInt(i);
-    if (!isLegalMove(board, turn, pos)) return;
-    const nextRecord = record + toAlphabet(i);
-    router.push(`/?record=${nextRecord}`);
-  };
+  const handleClick = (i: number) => () => setMoves([...moves, i]);
 
   return (
     <div className={styles.container}>
