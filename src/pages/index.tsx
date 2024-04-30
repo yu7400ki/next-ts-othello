@@ -12,25 +12,8 @@ import {
 } from '../othello';
 import { useRouter } from 'next/router';
 
-const Legal = 3 as const;
-type Legal = typeof Legal;
-
-const intoArray = (board: Board, legalMoves: bigint): (Stone | Legal | null)[] => {
-  const result: (Stone | Legal | null)[] = [];
-  for (let i = 0n; i < 64; i++) {
-    const mask = 1n << i;
-    if (board[Stone.Black] & mask) {
-      result.push(Stone.Black);
-    } else if (board[Stone.White] & mask) {
-      result.push(Stone.White);
-    } else if (legalMoves & mask) {
-      result.push(Legal);
-    } else {
-      result.push(null);
-    }
-  }
-  return result;
-};
+const intoArray = (n: bigint): boolean[] =>
+  Array.from(n.toString(2).padStart(64, '0')).map((c) => c === '1');
 
 const toAlphabet = (i: number): string =>
   String.fromCharCode('a'.charCodeAt(0) + (i % 8)) + (Math.floor(i / 8) + 1);
@@ -69,17 +52,55 @@ const Home = () => {
     <div className={styles.container}>
       <p>{status(board) === Status.GameOver ? 'GameOver' : turn === Stone.Black ? '⚫️' : '⚪️'}</p>
       <div className={styles.board}>
-        {intoArray(board, legalMoves).map((stone, i) => (
-          <div key={i} className={styles.cell} onClick={handleClick(i)}>
-            {stone === Stone.Black
-              ? '⚫️'
-              : stone === Stone.White
-                ? '⚪️'
-                : stone === Legal
-                  ? '🟢'
-                  : null}
-          </div>
-        ))}
+        {intoArray(board[Stone.Black])
+          .reverse()
+          .map((b, i) => ({ b, i }))
+          .filter(({ b }) => b)
+          .map(({ i }) => (
+            <div
+              key={i}
+              className={styles.stone}
+              style={{
+                left: `${(i % 8) * 12.5}%`,
+                top: `${Math.floor(i / 8) * 12.5}%`,
+              }}
+            >
+              ⚫️
+            </div>
+          ))}
+        {intoArray(board[Stone.White])
+          .reverse()
+          .map((b, i) => ({ b, i }))
+          .filter(({ b }) => b)
+          .map(({ i }) => (
+            <div
+              key={i}
+              className={styles.stone}
+              style={{
+                left: `${(i % 8) * 12.5}%`,
+                top: `${Math.floor(i / 8) * 12.5}%`,
+              }}
+            >
+              ⚪️
+            </div>
+          ))}
+        {intoArray(legalMoves)
+          .reverse()
+          .map((b, i) => ({ b, i }))
+          .filter(({ b }) => b)
+          .map(({ i }) => (
+            <div
+              key={i}
+              className={styles.stone}
+              onClick={handleClick(i)}
+              style={{
+                left: `${(i % 8) * 12.5}%`,
+                top: `${Math.floor(i / 8) * 12.5}%`,
+              }}
+            >
+              🟢
+            </div>
+          ))}
       </div>
     </div>
   );
