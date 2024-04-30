@@ -10,26 +10,26 @@
 }
 
 .status {
-  width: 640px;
-  height: 80px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 640px;
+  height: 80px;
 }
 
-.status:before {
+.status::before {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
-.status[data-status='0']:before {
+.status[data-status='0']::before {
   content: attr(data-turn);
 }
 
-.status[data-status='1']:before {
+.status[data-status='1']::before {
   content: 'GameOver';
 }
 
@@ -38,17 +38,17 @@
   width: 640px;
   height: 640px;
   user-select: none;
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
   background-image: linear-gradient(to right, #000 1px, transparent 1px),
     linear-gradient(to bottom, #000 1px, transparent 1px);
   background-size: 80px 80px;
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
 }
 
 .stone {
   position: absolute;
-  width: 80px;
-  height: 80px;
   display: grid;
   place-items: center;
+  width: 80px;
+  height: 80px;
 }
