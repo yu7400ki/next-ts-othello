@@ -8,7 +8,7 @@ import {
   opposite,
   status,
 } from '../othello';
-import { useState } from 'react';
+import { useReducer } from 'react';
 
 const intoArray = (n: bigint): boolean[] =>
   Array.from(n.toString(2).padStart(64, '0')).map((c) => c === '1');
@@ -33,11 +33,11 @@ const turnToString = (turn: Stone): string =>
   })[turn];
 
 const Home = () => {
-  const [moves, setMoves] = useState<number[]>([]);
+  const [moves, addMoves] = useReducer((moves: number[], i: number) => [...moves, i], []);
   const [board, turn] = fromMoves(moves);
   const legalMoves = makeLegalMoves(board, turn);
 
-  const handleClick = (i: number) => () => setMoves([...moves, i]);
+  const handleClick = (i: number) => () => addMoves(i);
 
   return (
     <div className={styles.container}>
